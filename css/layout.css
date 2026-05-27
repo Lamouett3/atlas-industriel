@@ -1,0 +1,272 @@
+/* ============================================
+   Layout — app grid, header, aside, views
+   ============================================ */
+
+.app {
+  position: relative;
+  z-index: var(--z-base);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100dvh;
+  animation: fadeIn 400ms var(--ease-out);
+}
+
+/* ===== HEADER ===== */
+header.app-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--overlay-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: var(--sp-3) var(--sp-6);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--sp-4);
+  position: relative;
+  z-index: 10;
+  transition: background-color var(--t-base) var(--ease-out),
+              border-color var(--t-base) var(--ease-out);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.brand .logo {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+.brand .logo svg {
+  width: 18px;
+  height: 18px;
+  color: var(--bg-0);
+}
+
+.brand .titles { display: flex; flex-direction: column; line-height: 1.1; }
+.brand h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variation-settings: "opsz" 32;
+}
+.brand .sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+.brand .badge {
+  margin-left: var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+
+/* ===== SEARCH (in header) ===== */
+.search-wrap {
+  display: flex;
+  justify-content: center;
+}
+.search-box {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  color: var(--text);
+  transition: all var(--t-base) var(--ease-out);
+}
+.search-box input::placeholder { color: var(--text-mute); }
+.search-box input:focus {
+  border-color: var(--accent);
+  background: var(--bg-1);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.search-box .icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-mute);
+  pointer-events: none;
+}
+.search-box .kbd {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  pointer-events: none;
+}
+.search-box input:focus ~ .kbd { display: none; }
+
+/* ===== MAIN GRID ===== */
+main.main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  overflow: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+aside.sidebar {
+  border-right: 1px solid var(--line);
+  background: var(--overlay-bg-mid);
+  backdrop-filter: blur(8px);
+  padding: 0;                      /* padding moves to inner wrappers */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;                /* outer container does NOT scroll */
+  transition: background-color var(--t-base) var(--ease-out),
+              border-color var(--t-base) var(--ease-out);
+}
+
+/* Scrollable inner area for filter sections */
+aside.sidebar .sidebar-scroll {
+  flex: 1;
+  min-height: 0;                   /* critical for flex+overflow children */
+  overflow-y: auto;
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+/* Pinned footer with Reset / Add buttons */
+aside.sidebar .sidebar-footer {
+  flex-shrink: 0;
+  padding: var(--sp-3) var(--sp-5) var(--sp-5);
+  border-top: 1px solid var(--line-soft);
+  background: var(--overlay-bg);
+  backdrop-filter: blur(8px);
+  display: flex;
+  gap: var(--sp-2);
+}
+aside.sidebar .sidebar-footer .btn { flex: 1; }
+
+.section h3 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-mute);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section h3 .hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* ===== VIEWS ZONE ===== */
+.views {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+.view {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity var(--t-base) var(--ease-out),
+              transform var(--t-base) var(--ease-out);
+}
+.view.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* ===== Footer keyboard hints ===== */
+.kbd-hints {
+  position: absolute;
+  bottom: var(--sp-3);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--sp-3);
+  padding: 6px 12px;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  z-index: 5;
+  pointer-events: none;
+}
+.kbd-hints span { display: flex; align-items: center; gap: 6px; }
+.kbd-hints kbd {
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: inherit;
+  color: var(--text-2);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  main.main { grid-template-columns: 1fr; }
+  aside.sidebar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 280px;
+    z-index: var(--z-overlay);
+    transform: translateX(-100%);
+    transition: transform var(--t-base) var(--ease-out);
+    box-shadow: var(--shadow-lg);
+  }
+  aside.sidebar.open { transform: translateX(0); }
+  .kbd-hints { display: none; }
+}
+
+@media (max-width: 640px) {
+  header.app-header {
+    grid-template-columns: 1fr;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+  }
+  .brand h1 { font-size: 16px; }
+}

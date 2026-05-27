@@ -1,0 +1,742 @@
+/* ============================================
+   Views — map, list, mind map
+   ============================================ */
+
+/* ============ MAP ============ */
+#map {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-0);
+}
+.leaflet-container {
+  background: var(--bg-0);
+  font-family: var(--font-body);
+}
+
+/* Tile rendering — CartoDB Voyager has rich, vibrant colors natively.
+   We only apply a tiny saturation boost to make selectable boundaries pop. */
+#map .leaflet-tile-pane {
+  filter: saturate(1.05);
+}
+
+/* Zoom controls */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow-md) !important;
+}
+.leaflet-control-zoom a {
+  background: var(--bg-2) !important;
+  color: var(--text-2) !important;
+  border: 1px solid var(--line) !important;
+  transition: all var(--t-fast);
+}
+.leaflet-control-zoom a:hover {
+  background: var(--bg-3) !important;
+  color: var(--text) !important;
+}
+.leaflet-control-attribution {
+  background: var(--overlay-bg) !important;
+  color: var(--text-mute) !important;
+  font-size: 10px !important;
+  border-radius: var(--r-sm) 0 0 0;
+  padding: 2px 6px !important;
+}
+.leaflet-control-attribution a { color: var(--text-2) !important; }
+
+/* Custom markers */
+.pin {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+.pin .dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--pin-color);
+  border: 2px solid var(--pin-ring);
+  box-shadow:
+    0 0 0 1.5px var(--pin-color),
+    0 4px 10px rgba(0,0,0,0.4),
+    0 0 16px var(--pin-color);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.pin:hover .dot {
+  transform: scale(1.4);
+}
+.pin .ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--pin-color);
+  opacity: 0.4;
+  animation: ping 2.4s var(--ease-out) infinite;
+}
+@keyframes ping {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  80%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Popups */
+.leaflet-popup-content-wrapper {
+  background: var(--bg-1) !important;
+  color: var(--text) !important;
+  border-radius: var(--r-md) !important;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-lg) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: var(--sp-4) var(--sp-5) !important;
+  font-family: var(--font-body) !important;
+  width: 240px !important;
+}
+.leaflet-popup-tip {
+  background: var(--bg-1) !important;
+  border: 1px solid var(--line-strong) !important;
+}
+.leaflet-popup-close-button {
+  color: var(--text-mute) !important;
+  font-size: 18px !important;
+  padding: 6px 8px !important;
+}
+.leaflet-popup-close-button:hover { color: var(--text) !important; }
+
+.popup .sector-mini {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: var(--r-pill);
+  margin-bottom: var(--sp-2);
+  color: var(--bg-0);
+}
+.popup h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.popup .meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  margin-bottom: var(--sp-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.popup .desc {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: var(--sp-2);
+}
+.popup .more {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.popup .more:hover { color: var(--text); }
+
+/* ============ LIST ============ */
+.list-view {
+  overflow-y: auto;
+  height: 100%;
+  padding: var(--sp-6) var(--sp-7);
+}
+.list-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-5);
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.list-toolbar .count {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-2);
+  font-variation-settings: "opsz" 24;
+  margin-right: auto;          /* pushes sort + export to the right */
+}
+.list-toolbar .export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 7px 14px;
+  white-space: nowrap;
+}
+.list-toolbar .export-btn svg { flex-shrink: 0; }
+.list-toolbar .export-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.list-toolbar .count strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.list-toolbar select {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 7px 28px 7px 12px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23B6BCCA' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: border-color var(--t-fast);
+}
+.list-toolbar select:hover { border-color: var(--line-strong); }
+
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-7);
+}
+.card {
+  position: relative;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
+  cursor: pointer;
+  transition: all var(--t-base) var(--ease-out);
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--card-color);
+  opacity: 0.7;
+  transition: opacity var(--t-base);
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%),
+                              var(--card-color), transparent 40%);
+  opacity: 0;
+  transition: opacity var(--t-base);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.card:hover {
+  border-color: var(--card-color);
+  background: var(--bg-2);
+  transform: translateY(-2px);
+}
+.card:hover::before { opacity: 1; }
+.card:hover::after { opacity: 0.15; }
+
+.card .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--sp-3);
+  gap: var(--sp-2);
+}
+.card h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--text);
+}
+.card .id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.card .sector-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  color: var(--card-color);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--card-color);
+  margin-bottom: var(--sp-3);
+}
+.card .sector-tag::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--card-color);
+  box-shadow: 0 0 6px var(--card-color);
+}
+.card .city {
+  font-size: 12px;
+  color: var(--text-mute);
+  margin-bottom: var(--sp-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.card .city svg { width: 11px; height: 11px; flex-shrink: 0; }
+.card .desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card .footer {
+  margin-top: var(--sp-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line-soft);
+}
+.card .footer .emp { display: flex; align-items: center; gap: 4px; }
+
+/* Highlight matched search */
+mark.hl {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 0 2px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* ============ MIND MAP ============ */
+.mindmap-view {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.mindmap-view svg {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  display: block;
+}
+.mindmap-view svg:active { cursor: grabbing; }
+
+.mm-link {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+  opacity: 0.5;
+  transition: opacity var(--t-base), stroke var(--t-base);
+}
+.mm-link.highlight {
+  stroke: var(--accent);
+  opacity: 1;
+}
+
+.mm-node {
+  cursor: pointer;
+}
+.mm-node rect, .mm-node circle {
+  transition: filter var(--t-fast), stroke-width var(--t-fast);
+}
+.mm-node:hover rect, .mm-node:hover circle {
+  filter: brightness(1.15);
+}
+.mm-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  fill: var(--text);
+  pointer-events: none;
+  user-select: none;
+}
+.mm-label.root {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  fill: var(--bg-0);
+}
+.mm-label.sector {
+  font-weight: 600;
+  font-size: 12.5px;
+  fill: var(--bg-0);
+}
+.mm-label.company { fill: var(--text); }
+
+.mm-toggle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Mindmap controls */
+.mm-controls {
+  position: absolute;
+  bottom: var(--sp-5);
+  right: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 3px;
+  box-shadow: var(--shadow-md);
+  z-index: 5;
+}
+.mm-controls button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--text-2);
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--t-fast);
+}
+.mm-controls button:hover {
+  background: var(--bg-3);
+  color: var(--text);
+}
+.mm-controls button svg { width: 14px; height: 14px; }
+
+.mm-help {
+  position: absolute;
+  top: var(--sp-5);
+  left: var(--sp-5);
+  background: var(--overlay-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mute);
+  max-width: 240px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mm-help strong {
+  display: block;
+  color: var(--text);
+  font-size: 11px;
+  margin-bottom: 4px;
+  letter-spacing: 0.06em;
+}
+.mm-help-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mm-help kbd {
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: inherit;
+  color: var(--text-2);
+}
+
+/* ============================================
+   Marker clusters (Leaflet.markercluster)
+   Override default styles for theme consistency
+   ============================================ */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: transform var(--t-base) var(--ease-out),
+              opacity var(--t-base) var(--ease-out);
+}
+
+.cluster-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-1);
+  border: 2px solid var(--accent);
+  box-shadow:
+    0 0 0 4px rgba(79, 209, 197, 0.15),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.cluster-icon:hover { transform: scale(1.1); }
+
+.cluster-icon.cluster-medium {
+  width: 42px; height: 42px;
+  font-size: 13px;
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  box-shadow:
+    0 0 0 5px rgba(255, 179, 71, 0.18),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+.cluster-icon.cluster-large {
+  width: 50px; height: 50px;
+  font-size: 14px;
+  border-color: var(--sec-chimie);
+  color: var(--sec-chimie);
+  box-shadow:
+    0 0 0 6px rgba(255, 123, 107, 0.18),
+    0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   Boundaries — tooltip styling
+   ============================================ */
+.boundary-tooltip {
+  background: var(--overlay-bg) !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: var(--r-md) !important;
+  padding: 6px 10px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  color: var(--text) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  font-weight: 500 !important;
+  box-shadow: var(--shadow-md) !important;
+  backdrop-filter: blur(8px);
+}
+.boundary-tooltip::before { display: none !important; }
+
+/* List sentinel — visible "loading more" indicator */
+.list-sentinel {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.list-sentinel .dots::before { content: "Chargement de plus de résultats…"; }
+.list-sentinel .dots::after {
+  content: "";
+  display: inline-block;
+  width: 10px; height: 10px;
+  margin-left: 8px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+/* ============================================
+   Map overlay (welcome / empty state)
+   ============================================ */
+.map-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 600;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.map-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.map-overlay-card {
+  background: var(--overlay-bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  padding: 28px 32px;
+  max-width: 380px;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 380ms var(--ease-out);
+}
+.map-overlay-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent-glow), var(--accent-2-glow));
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+}
+.map-overlay-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.map-overlay-card p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-bottom: 16px;
+}
+.map-overlay-card strong { color: var(--accent); font-weight: 600; }
+.map-overlay-tips {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-mute);
+}
+.map-overlay-tips kbd {
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: inherit;
+  color: var(--text-2);
+  margin-right: 4px;
+}
+
+/* Cap banner — top-center notice when too many results to display */
+.map-cap-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--overlay-bg);
+  border: 1px solid var(--accent-2);
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  color: var(--text);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 280ms var(--ease-out);
+}
+.map-cap-banner svg { color: var(--accent-2); flex-shrink: 0; }
+.map-cap-banner strong { color: var(--accent-2); }
+
+/* ============================================
+   Mind map — local search + stats
+   ============================================ */
+.mm-help {
+  width: 240px;
+}
+.mm-search {
+  width: 100%;
+  padding: 7px 10px;
+  margin: 6px 0;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-family: var(--font-body);
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: all var(--t-fast);
+}
+.mm-search::placeholder {
+  color: var(--text-mute);
+  font-family: var(--font-body);
+  text-transform: none;
+}
+.mm-search:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-1);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.mm-stats {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-2);
+  margin-bottom: 6px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+.mm-stats strong { color: var(--accent); }
+
+/* Mind map empty overlay */
+.mm-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out);
+}
+.mm-overlay.visible { opacity: 1; pointer-events: auto; }
+
+/* "+ N more" pseudo-node hover indicator */
+.mm-node-more rect:hover {
+  filter: brightness(1.15);
+  cursor: pointer;
+}
+
+/* Overlay sub-text — smaller hint below the main message */
+.map-overlay-sub {
+  font-size: 12px !important;
+  color: var(--text-mute) !important;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+.map-overlay-sub strong {
+  color: var(--accent) !important;
+}

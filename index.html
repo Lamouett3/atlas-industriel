@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Atlas Industriel · France</title>
+  <meta name="description" content="Cartographie interactive des entreprises industrielles de France — données API gouv.fr (Sirene + RNE). Carte, liste, mind map." />
+  <meta name="theme-color" content="#0A0E1A" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('atlas.theme');
+        var theme = (saved === 'light' || saved === 'dark')
+          ? saved
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = theme === 'light' ? '#FAF7F0' : '#0A0E1A';
+      } catch (e) { /* fall back to default */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/views.css" />
+  <link rel="stylesheet" href="css/refresh.css" />
+  <link rel="stylesheet" href="css/crm.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18"/>
+          <path d="M5 21V8l4-3 4 3v13"/>
+          <path d="M13 12h4l4 3v6"/>
+          <path d="M9 11v0M9 14v0M9 17v0"/>
+        </svg>
+      </span>
+      <div class="titles">
+        <h1>Atlas Industriel</h1>
+        <span class="sub" id="refresh-status">Données : entrées curées</span>
+      </div>
+      <span class="badge">v1.1.0 · BETA</span>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search" type="text" placeholder="Rechercher : entreprise, ville, secteur, SIREN, code NAF…" aria-label="Recherche" />
+        <span class="kbd">/</span>
+      </div>
+    </div>
+
+    <div class="view-switch" role="tablist" aria-label="Vue">
+      <button data-view-btn="map" class="active" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.553 2.776A1 1 0 0021 18.882V8.118a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        Carte<span class="num"></span>
+      </button>
+      <button data-view-btn="list" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+        Liste
+      </button>
+      <button data-view-btn="mindmap" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="20" cy="18" r="2"/><path d="M9 12L6 7M9 12L6 17M15 12L18 7M15 12L18 17"/></svg>
+        Mind&nbsp;Map
+      </button>
+      <button data-view-btn="dashboard" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </button>
+    </div>
+
+    <button id="refresh-btn" class="refresh-btn" type="button" aria-label="Rechercher des entreprises via l'API gouv.fr" title="Rechercher (R)">
+      <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/>
+        <polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      <span class="refresh-text">Rechercher</span>
+    </button>
+
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Basculer le thème">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+        <line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/>
+        <line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/>
+        <line x1="4.93" y1="19.07" x2="7.05" y2="16.95"/>
+        <line x1="16.95" y1="7.05" x2="19.07" y2="4.93"/>
+      </svg>
+    </button>
+
+    <div class="profile-wrap">
+      <button id="profile-btn" class="profile-btn" type="button" aria-label="Profil"></button>
+      <div id="profile-menu" class="profile-menu"></div>
+    </div>
+
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+
+    <aside class="sidebar">
+
+      <div class="sidebar-scroll">
+
+        <section class="section">
+          <h3>Aperçu <span class="hint">temps réel</span></h3>
+          <div class="stats">
+            <div class="stat"><div class="num" id="stat-total">—</div><div class="lbl">Entreprises</div></div>
+            <div class="stat"><div class="num" id="stat-sectors">—</div><div class="lbl">Secteurs</div></div>
+            <div class="stat"><div class="num" id="stat-cities">—</div><div class="lbl">Villes</div></div>
+            <div class="stat"><div class="num" id="stat-emp">—</div><div class="lbl">k Salariés</div></div>
+          </div>
+        </section>
+
+        <details class="section">
+          <summary><h3>Régions <span class="hint">multi-sélection</span></h3></summary>
+          <div id="regions" class="filter-list"></div>
+        </details>
+
+        <details class="section">
+          <summary><h3>Départements <span class="hint">multi-sélection</span></h3></summary>
+          <div id="depts" class="depts-filter-list"></div>
+        </details>
+
+        <details class="section">
+          <summary><h3>Taille <span class="hint">multi-sélection</span></h3></summary>
+          <div id="sizes" class="size-list"></div>
+        </details>
+
+        <details class="section">
+          <summary><h3>Secteurs <span class="hint">multi-sélection</span></h3></summary>
+          <div id="filters" class="filter-list"></div>
+        </details>
+
+        <details class="section">
+          <summary><h3>Code NAF <span class="hint">recherche libre</span></h3></summary>
+          <div class="naf-filter-box">
+            <div class="naf-filter-input-wrap">
+              <svg class="naf-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="naf-filter" class="naf-filter-input" placeholder="Ex : 46.62, 26.60Z, 10…" autocomplete="off" aria-label="Filtrer par code NAF" />
+              <button id="naf-filter-clear" class="naf-filter-clear" type="button" aria-label="Effacer" title="Effacer">×</button>
+            </div>
+            <div class="naf-filter-hint">Filtre les entreprises déjà affichées par leur code NAF. Avec ou sans le point.</div>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="clear-filters" class="btn btn-ghost">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Réinit.
+        </button>
+        <button id="add-company" class="btn btn-accent" title="Ajouter (A)">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ajouter
+        </button>
+      </div>
+
+    </aside>
+
+    <section class="views">
+
+      <div class="view active" data-view="map">
+        <div id="map"></div>
+      </div>
+
+      <div class="view" data-view="list">
+        <div class="list-view">
+          <div class="list-toolbar" id="list-toolbar">
+            <div class="count"><strong>0</strong> entreprises</div>
+            <select id="sort-select" aria-label="Trier par">
+              <option value="name">Tri : Nom (A → Z)</option>
+              <option value="employees">Tri : Salariés (haut → bas)</option>
+              <option value="city">Tri : Ville (A → Z)</option>
+            </select>
+            <button id="export-xlsx" class="btn btn-ghost export-btn" type="button" title="Exporter la liste filtrée en Excel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exporter Excel
+            </button>
+          </div>
+          <div id="list-grid" class="list-grid"></div>
+        </div>
+      </div>
+
+      <div class="view" data-view="mindmap">
+        <div class="mindmap-view">
+          <div class="mm-help">
+            <strong>Mind Map</strong>
+            <input id="mm-search" type="text" class="mm-search" placeholder="Filtrer dans la mind map…" aria-label="Recherche locale" />
+            <div class="mm-stats" id="mm-stats"></div>
+            <div class="mm-help-row">Clic <span style="color:var(--text-2)">/</span> repli</div>
+            <div class="mm-help-row">Glisser · molette</div>
+          </div>
+          <svg id="mindmap" aria-label="Mind map des secteurs"></svg>
+          <div class="mm-controls">
+            <button id="mm-zoom-in" title="Zoom +" aria-label="Zoom in">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button id="mm-zoom-out" title="Zoom −" aria-label="Zoom out">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button id="mm-reset" title="Recentrer" aria-label="Recentrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+            <button id="mm-expand" title="Tout déplier" aria-label="Tout déplier">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+            </button>
+            <button id="mm-collapse" title="Tout replier" aria-label="Tout replier">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" data-view="dashboard"></div>
+
+      <div class="kbd-hints" aria-hidden="true">
+        <span><kbd>1</kbd> Carte</span>
+        <span><kbd>2</kbd> Liste</span>
+        <span><kbd>3</kbd> Map</span>
+        <span><kbd>4</kbd> Dashboard</span>
+        <span><kbd>/</kbd> Recherche</span>
+        <span><kbd>R</kbd> Rechercher</span>
+        <span><kbd>A</kbd> Ajouter</span>
+        <span><kbd>T</kbd> Thème</span>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Refresh panel — content built dynamically by refresh.js -->
+<div class="refresh-panel" id="refresh-panel">
+  <div class="refresh-panel-inner">
+    <div class="refresh-panel-head">
+      <div class="spinner"></div>
+      <strong>API recherche-entreprises · gouv.fr</strong>
+    </div>
+    <div id="refresh-panel-content"></div>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal-content" role="dialog" aria-modal="true" aria-label="Détails entreprise"></div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-backdrop" id="edit-backdrop">
+  <div class="modal edit-modal" id="edit-content" role="dialog" aria-modal="true" aria-label="Éditer entreprise"></div>
+</div>
+
+<script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script defer src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script defer src="https://d3js.org/d3.v7.min.js"></script>
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>

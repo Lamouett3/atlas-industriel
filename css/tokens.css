@@ -1,0 +1,162 @@
+/* ============================================
+   Design tokens — Atlas Industriel
+   Dual theme · CSS variables only · zero JS dependency for colors
+   ============================================ */
+
+:root {
+  /* === Surfaces (dark — default) === */
+  --bg-0:      #0A0E1A;
+  --bg-1:      #11161F;
+  --bg-2:      #181E2C;
+  --bg-3:      #1F2535;
+
+  --line:        #252B3B;
+  --line-soft:   #1C2230;
+  --line-strong: #353B4D;
+
+  --text:      #ECEEF3;
+  --text-2:    #B6BCCA;
+  --text-mute: #6B7280;
+  --text-dim:  #4A5060;
+
+  /* Overlays & backdrops */
+  --overlay-bg:     rgba(17, 22, 31, 0.85);
+  --overlay-bg-mid: rgba(17, 22, 31, 0.60);
+  --modal-backdrop: rgba(10, 14, 26, 0.70);
+  --pin-ring:       var(--bg-0);
+
+  /* Atmospheric layers */
+  --aurora-1: rgba(79, 209, 197, 0.06);
+  --aurora-2: rgba(255, 179, 71, 0.04);
+  --aurora-3: rgba(112, 0, 200, 0.025);
+  --grain:    rgba(255, 255, 255, 0.018);
+
+  /* Accents */
+  --accent:        #4FD1C5;
+  --accent-glow:   rgba(79, 209, 197, 0.25);
+  --accent-2:      #FFB347;
+  --accent-2-glow: rgba(255, 179, 71, 0.25);
+
+  /* Reference boundary grid (always-on, faint) */
+  --boundary-ref:      rgba(180, 195, 220, 0.40);
+  --boundary-ref-dept: rgba(180, 195, 220, 0.18);
+
+  /* Sector palette — bright on dark */
+  --sec-chimie:      #FF7B6B;
+  --sec-pharma:      #4FD1C5;
+  --sec-medical:     #2DD4BF;
+  --sec-micro:       #FFD23F;
+  --sec-electro:     #FB7185;
+  --sec-elec:        #FACC15;
+  --sec-metal:       #A0AEC0;
+  --sec-meca:        #6EE7B7;
+  --sec-auto:        #7AAFFF;
+  --sec-aero:        #C084FC;
+  --sec-energie:     #FB923C;
+  --sec-plast:       #F472B6;
+  --sec-materiaux:   #D4A574;
+  --sec-papier:      #A3B18A;
+  --sec-agro:        #84CC16;
+  --sec-boissons:    #38BDF8;
+  --sec-textile:     #E879F9;
+  --sec-negoce:      #FCA5A5;
+  --sec-defense:     #94A3B8;
+
+  /* === Typography === */
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-body:    'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* === Spacing === */
+  --sp-1: 4px;  --sp-2: 8px;   --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px;  --sp-7: 32px; --sp-8: 48px;
+
+  /* === Radii === */
+  --r-sm: 6px;  --r-md: 10px;  --r-lg: 14px;  --r-xl: 20px;  --r-pill: 999px;
+
+  /* === Motion === */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 120ms;
+  --t-base: 240ms;
+  --t-slow: 380ms;
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.25);
+
+  /* === Z-index === */
+  --z-base: 1;
+  --z-overlay: 100;
+  --z-modal: 1000;
+  --z-toast: 2000;
+
+  /* Map tile filter */
+  --tile-filter: brightness(0.95) saturate(0.95);
+}
+
+/* ============================================
+   LIGHT THEME — warm paper, refined contrast
+   Activated by [data-theme="light"] on <html>
+   ============================================ */
+:root[data-theme="light"] {
+  --bg-0:      #FAF7F0;
+  --bg-1:      #FFFFFF;
+  --bg-2:      #F2ECDF;
+  --bg-3:      #E8E0CE;
+
+  --line:        #DED4BF;
+  --line-soft:   #EDE6D4;
+  --line-strong: #B8AC93;
+
+  --text:      #1A1612;
+  --text-2:    #4A4239;
+  --text-mute: #8A7F6F;
+  --text-dim:  #B5AB99;
+
+  --overlay-bg:     rgba(255, 251, 244, 0.92);
+  --overlay-bg-mid: rgba(255, 251, 244, 0.65);
+  --modal-backdrop: rgba(40, 32, 22, 0.45);
+  --pin-ring:       #FFFFFF;
+
+  --aurora-1: rgba(45, 157, 143, 0.10);
+  --aurora-2: rgba(234, 88, 12, 0.07);
+  --aurora-3: rgba(147, 51, 234, 0.05);
+  --grain:    rgba(0, 0, 0, 0.022);
+
+  --accent:        #2D9D8F;
+  --accent-glow:   rgba(45, 157, 143, 0.22);
+  --accent-2:      #E07A2E;
+  --accent-2-glow: rgba(224, 122, 46, 0.20);
+
+  /* Reference boundary grid (always-on, faint) */
+  --boundary-ref:      rgba(90, 105, 130, 0.40);
+  --boundary-ref-dept: rgba(90, 105, 130, 0.18);
+
+  --sec-chimie:      #C8553D;
+  --sec-pharma:      #2D9D8F;
+  --sec-medical:     #0F9488;
+  --sec-micro:       #B8870F;
+  --sec-electro:     #BE3455;
+  --sec-elec:        #A16207;
+  --sec-metal:       #6B7686;
+  --sec-meca:        #16A085;
+  --sec-auto:        #2563EB;
+  --sec-aero:        #8E44CC;
+  --sec-energie:     #DC6B1F;
+  --sec-plast:       #C2185B;
+  --sec-materiaux:   #92500E;
+  --sec-papier:      #5F7A4A;
+  --sec-agro:        #4D7C0F;
+  --sec-boissons:    #0284C7;
+  --sec-textile:     #A21CAF;
+  --sec-negoce:      #B45309;
+  --sec-defense:     #4B5563;
+
+  --shadow-sm: 0 1px 2px rgba(40, 32, 22, 0.08);
+  --shadow-md: 0 4px 12px rgba(40, 32, 22, 0.10), 0 1px 3px rgba(40, 32, 22, 0.06);
+  --shadow-lg: 0 12px 32px rgba(40, 32, 22, 0.18), 0 4px 8px rgba(40, 32, 22, 0.08);
+
+  --tile-filter: none;
+}
